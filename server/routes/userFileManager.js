@@ -97,7 +97,8 @@ router.delete("/:id", auth, async (req, res) => {
 				.status(401)
 				.json({ success: false, message: "Not authorized" });
 		}
-		await image.remove();
+		await User.findByIdAndUpdate(req.user._id, { $pull: { picture: image._id } });
+		await Picture.findByIdAndDelete(req.params.id)
 		res.json({ success: true, message: "Image deleted" });
 	} catch (error) {
 		console.log(error);

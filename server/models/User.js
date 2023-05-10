@@ -17,8 +17,10 @@ const userSchema = new Schema(
 			enum: ["user", "admin"],
 			default: "user",
 		},
+		pictures: [
+			{ type: Schema.Types.ObjectId, ref: "Picture", required: true },
+		],
 	},
 	{ timestamps: true }
 );
-
 module.exports = mongoose.model("User", userSchema);

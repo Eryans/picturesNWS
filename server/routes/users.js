@@ -1,7 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
-const auth = require("../middlewares/auth")
+const auth = require("../middlewares/auth");
+const createToken = require("../helpers/jwt");
 var router = express.Router();
 
 // Créer un nouvel utilisateur
@@ -23,8 +24,8 @@ router.post("/users", async (req, res) => {
 		// Créer un nouvel utilisateur avec le mot de passe hashé
 		const newUser = new User({ name, password: hashedPassword });
 		const savedUser = await newUser.save();
-
-		res.json(savedUser);
+		const token = createToken(savedUser);
+		res.json({ token: token, newUser: savedUser });
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Erreur serveur" });
@@ -43,7 +44,7 @@ router.get("/all", auth, async (req, res) => {
 });
 
 // Récupérer un utilisateur par son ID
-router.get("/users/:id",auth, async (req, res) => {
+router.get("/users/:id", auth, async (req, res) => {
 	try {
 		const { id } = req.params;
 		const user = await User.findById(id);
@@ -85,7 +86,7 @@ router.put("/users/:id", auth, async (req, res) => {
 });
 
 // Supprimer un utilisateur par son ID
-router.delete("/users/:id",auth, async (req, res) => {
+router.delete("/users/:id", auth, async (req, res) => {
 	try {
 		const { id } = req.params;
 
@@ -106,20 +107,23 @@ router.delete("/users/:id",auth, async (req, res) => {
 });
 
 // LOGIN
-router.post('/login', async (req, res) => {
-  try {
-    const { name, password } = req.body;
-    const user = await User.findOne({ name });
-    if (!user) throw Error('User not found');
+router.post("/login", async (req, res) => {
+	try {
+		const { name, password } = req.body;
+		const user = await User.findOne({ name });
+		if (!user) throw Error("User not found");
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw Error('Invalid credentials');
+		const isMatch = await bcrypt.compare(password, user.password);
+		if (!isMatch) throw Error("Invalid credentials");
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.status(200).json({ token, user: { id: user._id, name: user.name } });
-  } catch (err) {
-    res.status(400).json({ msg: err.message });
-  }
+		const token = createToken(user);
+		res.status(200).json({
+			token: token,
+			user: { id: user._id, name: user.name },
+		});
+	} catch (err) {
+		res.status(400).json({ msg: err.message });
+	}
 });
 
-module.exports = router
+module.exports = router;

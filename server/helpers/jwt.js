@@ -6,7 +6,7 @@ const createToken = (user) => {
 	// Création du payload du JWT
 	const payload = {
 		user: {
-			id: user.id,
+			id: user._id,
 		},
 	};
 

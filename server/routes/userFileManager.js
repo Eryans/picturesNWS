@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer"); // pour gérer le téléchargement de fichiers
 const auth = require("../middlewares/auth"); // middleware pour vérifier le token JWT
 const Picture = require("../models/Picture"); // modèle Mongoose pour les images
+const User = require("../models/User");
 
 // Configuration de Multer pour gérer le téléchargement de fichiers
 const storage = multer.diskStorage({
@@ -92,6 +93,18 @@ router.delete("/:id", auth, async (req, res) => {
 		res.json({ message: "Image deleted" });
 	} catch (error) {
 		console.log(error);
+		res.json({ error: error });
+	}
+});
+
+router.delete("/all-user-images", auth, async (req, res) => {
+	try {
+		const user = await User.findById(req.body.userId);
+		await Picture.deleteMany({ user: user._id });
+		res.json({success:true, message:"deleted all user pictures"})
+	} catch (error) {
+		console.log(error);
+		res.json({ error: error });
 	}
 });
 

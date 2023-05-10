@@ -88,21 +88,19 @@ router.put("/update/:id", auth, async (req, res) => {
 // Supprimer un utilisateur par son ID
 router.delete("/:id", auth, async (req, res) => {
 	try {
-		const { id } = req.params;
-
 		// Vérifier si l'utilisateur existe
-		const existingUser = await User.findById(id);
+		const existingUser = await User.findById(req.params.id);
 		if (!existingUser) {
 			return res.status(404).json({ message: "Utilisateur non trouvé" });
 		}
 
 		// Supprimer l'utilisateur
-		await existingUser.remove();
+		await User.findByIdAndDelete(req.params.id);
 
 		res.json({ message: "Utilisateur supprimé" });
 	} catch (err) {
 		console.error(err);
-		res.status(500);
+		res.status(500).json({ message: "Erreur serveur" });
 	}
 });
 
@@ -125,6 +123,5 @@ router.post("/login", async (req, res) => {
 		res.status(400).json({ msg: err.message });
 	}
 });
-
 
 module.exports = router;

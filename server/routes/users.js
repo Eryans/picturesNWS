@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const auth = require("../middlewares/auth");
 const { createToken } = require("../helpers/jwt");
+const Picture = require("../models/Picture");
 var router = express.Router();
 
 // Créer un nouvel utilisateur
@@ -101,6 +102,9 @@ router.delete("/:id", auth, async (req, res) => {
 		}
 
 		// Supprimer l'utilisateur
+		for (const picture of existingUser.pictures) {
+			await Picture.findByIdAndDelete(picture);
+		}
 		await User.findByIdAndDelete(req.params.id);
 
 		res.json({ success: true, message: "Utilisateur supprimé" });

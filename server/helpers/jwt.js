@@ -15,10 +15,7 @@ const createToken = (user) => {
 		expiresIn: "1h", // Durée d'expiration du token
 	});
 
-	// Hashage du token avant de l'envoyer dans la réponse
-	const hashedToken = bcrypt.hashSync(token, 10);
-
-	return hashedToken;
+	return token
 };
 
 module.exports = { createToken };

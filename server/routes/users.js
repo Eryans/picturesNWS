@@ -6,7 +6,7 @@ const createToken = require("../helpers/jwt");
 var router = express.Router();
 
 // Créer un nouvel utilisateur
-router.post("/users", async (req, res) => {
+router.post("/create", async (req, res) => {
 	try {
 		const { name, password } = req.body;
 
@@ -44,7 +44,7 @@ router.get("/all", auth, async (req, res) => {
 });
 
 // Récupérer un utilisateur par son ID
-router.get("/users/:id", auth, async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
 	try {
 		const { id } = req.params;
 		const user = await User.findById(id);
@@ -59,7 +59,7 @@ router.get("/users/:id", auth, async (req, res) => {
 });
 
 // Mettre à jour un utilisateur par son ID
-router.put("/users/:id", auth, async (req, res) => {
+router.put("/update/:id", auth, async (req, res) => {
 	try {
 		const { id } = req.params;
 		const { name, password } = req.body;
@@ -86,7 +86,7 @@ router.put("/users/:id", auth, async (req, res) => {
 });
 
 // Supprimer un utilisateur par son ID
-router.delete("/users/:id", auth, async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
 	try {
 		const { id } = req.params;
 

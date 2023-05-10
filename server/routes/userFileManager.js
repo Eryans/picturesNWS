@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Route pour télécharger une image
-router.get("/images/:id", auth, async (req, res) => {
+router.get("/download/:id", auth, async (req, res) => {
 	try {
 		const image = await Picture.findById(req.params.id);
 		if (!image) {
@@ -31,7 +31,7 @@ router.get("/images/:id", auth, async (req, res) => {
 });
 
 // Route pour récupérer toutes les images d'un utilisateur
-router.get("/images", auth, async (req, res) => {
+router.get("/all", auth, async (req, res) => {
 	try {
 		const images = await Picture.find({ user: req.user.id });
 		res.json(images);
@@ -42,7 +42,7 @@ router.get("/images", auth, async (req, res) => {
 });
 
 // Route pour créer une nouvelle image
-router.post("/images", auth, upload.single("image"), async (req, res) => {
+router.post("/upload", auth, upload.single("image"), async (req, res) => {
 	try {
 		const newImage = new Picture({
 			filename: req.file.filename,
@@ -60,7 +60,7 @@ router.post("/images", auth, upload.single("image"), async (req, res) => {
 });
 
 // Route pour mettre à jour une image
-router.put("/images/:id", auth, async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
 	try {
 		const image = await Picture.findById(req.params.id);
 		if (!image) {
@@ -79,7 +79,7 @@ router.put("/images/:id", auth, async (req, res) => {
 });
 
 // Route pour supprimer une image
-router.delete("/images/:id", auth, async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
 	try {
 		const image = await Picture.findById(req.params.id);
 		if (!image) {

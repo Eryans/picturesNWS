@@ -25,10 +25,10 @@ router.post("/create", async (req, res) => {
 		const newUser = new User({ name, password: hashedPassword });
 		const savedUser = await newUser.save();
 		const token = createToken(savedUser);
-		res.json({ token: token, newUser: savedUser });
+		res.json({ success: true, token: token, newUser: savedUser });
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ message: "Erreur serveur" });
+		res.status(500).json({ success: false, message: "Erreur serveur" });
 	}
 });
 
@@ -36,10 +36,10 @@ router.post("/create", async (req, res) => {
 router.get("/all", auth, async (req, res) => {
 	try {
 		const users = await User.find();
-		res.json(users);
+		res.json({ success: true, users: users });
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ message: "Erreur serveur" });
+		res.status(500).json({ success: false, message: "Erreur serveur" });
 	}
 });
 
@@ -49,12 +49,14 @@ router.get("/:id", auth, async (req, res) => {
 		const { id } = req.params;
 		const user = await User.findById(id);
 		if (!user) {
-			return res.status(404).json({ message: "Utilisateur non trouvé" });
+			return res
+				.status(404)
+				.json({ success: false, message: "Utilisateur non trouvé" });
 		}
-		res.json(user);
+		res.json({ success: true, user: user });
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ message: "Erreur serveur" });
+		res.status(500).json({ success: false, message: "Erreur serveur" });
 	}
 });
 
@@ -67,7 +69,9 @@ router.put("/update/:id", auth, async (req, res) => {
 		// Vérifier si l'utilisateur existe
 		const existingUser = await User.findById(id);
 		if (!existingUser) {
-			return res.status(404).json({ message: "Utilisateur non trouvé" });
+			return res
+				.status(404)
+				.json({ success: false, message: "Utilisateur non trouvé" });
 		}
 
 		// Hasher le nouveau mot de passe avant de le stocker
@@ -78,10 +82,10 @@ router.put("/update/:id", auth, async (req, res) => {
 		existingUser.password = hashedPassword;
 		const updatedUser = await existingUser.save();
 
-		res.json(updatedUser);
+		res.json({ success: true, user: updatedUser });
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ message: "Erreur serveur" });
+		res.status(500).json({ success: false, message: "Erreur serveur" });
 	}
 });
 
@@ -91,16 +95,18 @@ router.delete("/:id", auth, async (req, res) => {
 		// Vérifier si l'utilisateur existe
 		const existingUser = await User.findById(req.params.id);
 		if (!existingUser) {
-			return res.status(404).json({ message: "Utilisateur non trouvé" });
+			return res
+				.status(404)
+				.json({ success: false, message: "Utilisateur non trouvé" });
 		}
 
 		// Supprimer l'utilisateur
 		await User.findByIdAndDelete(req.params.id);
 
-		res.json({ message: "Utilisateur supprimé" });
+		res.json({ success: true, message: "Utilisateur supprimé" });
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ message: "Erreur serveur" });
+		res.status(500).json({ success: false, message: "Erreur serveur" });
 	}
 });
 
@@ -116,11 +122,12 @@ router.post("/login", async (req, res) => {
 
 		const token = createToken(user);
 		res.status(200).json({
+			success: true,
 			token: token,
 			user: { id: user._id, name: user.name },
 		});
 	} catch (err) {
-		res.status(400).json({ msg: err.message });
+		res.status(400).json({ success: false, msg: err.message });
 	}
 });
 

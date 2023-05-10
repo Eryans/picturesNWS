@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Route pour télécharger une image
-router.get("/images/:id", async (req, res) => {
+router.get("/images/:id", auth, async (req, res) => {
 	try {
 		const image = await Picture.findById(req.params.id);
 		if (!image) {
@@ -95,6 +95,4 @@ router.delete("/images/:id", auth, async (req, res) => {
 	}
 });
 
-
-
-module.exports = router
+module.exports = router;

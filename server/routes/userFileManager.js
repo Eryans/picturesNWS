@@ -53,6 +53,10 @@ router.post("/upload", auth, upload.single("image"), async (req, res) => {
 			user: req.user.id,
 		});
 		const savedImage = await newImage.save();
+		const user = await User.findById(req.body.userId);
+		if (!user) res.json({ success: false, message: "no user found" });
+		user.pictures = [savedImage, ...user.pictures];
+		await user.save()
 		res.json({ success: true, image: savedImage });
 	} catch (error) {
 		console.error(error);

@@ -27,7 +27,7 @@ router.get("/download/:id", auth, async (req, res) => {
 		res.sendFile(image.filename, { root: "uploads/" });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ message: "Server error" });
+		res.status(500).json({ success: false, message: "Server error" });
 	}
 });
 
@@ -35,10 +35,10 @@ router.get("/download/:id", auth, async (req, res) => {
 router.get("/all", auth, async (req, res) => {
 	try {
 		const images = await Picture.find({ user: req.user.id });
-		res.json(images);
+		res.json({ success: true, image: images });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ message: "Server error" });
+		res.status(500).json({ success: false, message: "Server error" });
 	}
 });
 
@@ -53,10 +53,10 @@ router.post("/upload", auth, upload.single("image"), async (req, res) => {
 			user: req.user.id,
 		});
 		const savedImage = await newImage.save();
-		res.json(savedImage);
+		res.json({ success: true, image: savedImage });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ message: "Server error" });
+		res.status(500).json({ success: false, message: "Server error" });
 	}
 });
 
@@ -72,10 +72,10 @@ router.put("/:id", auth, async (req, res) => {
 		}
 		image.originalName = req.body.originalName;
 		const savedImage = await image.save();
-		res.json(savedImage);
+		res.json({ success: true, image: savedImage });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ message: "Server error" });
+		res.status(500).json({ success: false, message: "Server error" });
 	}
 });
 
@@ -84,16 +84,20 @@ router.delete("/:id", auth, async (req, res) => {
 	try {
 		const image = await Picture.findById(req.params.id);
 		if (!image) {
-			return res.status(404).json({ message: "Image not found" });
+			return res
+				.status(404)
+				.json({ success: false, message: "Image not found" });
 		}
 		if (image.user.toString() !== req.user.id) {
-			return res.status(401).json({ message: "Not authorized" });
+			return res
+				.status(401)
+				.json({ success: false, message: "Not authorized" });
 		}
 		await image.remove();
-		res.json({ message: "Image deleted" });
+		res.json({ success: true, message: "Image deleted" });
 	} catch (error) {
 		console.log(error);
-		res.json({ error: error });
+		res.json({ success: false, error: error });
 	}
 });
 
@@ -101,10 +105,10 @@ router.delete("/all-user-images", auth, async (req, res) => {
 	try {
 		const user = await User.findById(req.body.userId);
 		await Picture.deleteMany({ user: user._id });
-		res.json({success:true, message:"deleted all user pictures"})
+		res.json({ success: true, message: "deleted all user pictures" });
 	} catch (error) {
 		console.log(error);
-		res.json({ error: error });
+		res.json({ success: false, error: error });
 	}
 });
 

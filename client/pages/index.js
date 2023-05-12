@@ -12,7 +12,7 @@ export default function Test() {
   useEffect(() => {
     if (localStorage.getItem("tokenExoMai") !== null) {
       // setTokenUrl(localStorage.getItem("tokenExoMai"))
-      console.log(localStorage.getItem("tokenExoMai"))
+      // console.log(localStorage.getItem("tokenExoMai"))
     }
   }, [])
 
